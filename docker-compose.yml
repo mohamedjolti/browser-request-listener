@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  controlhttprequest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+        - "4040:8080"
+    container_name: control-http-request
+    volumes:
+      - "/usr/src/app/node_modules"
+      - "./:/usr/src/app"
