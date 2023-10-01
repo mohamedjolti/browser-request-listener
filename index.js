@@ -4,28 +4,33 @@ import { CALLED_BY_FETCH_REQUEST, CALLED_BY_XHR, Sender } from "./src/Sender";
 
 
 const controlXMLHttpRequest = new ControlXmlHttpRequest({
-  reportOnError :function(error){
-      console.log(error);
+  reportOnError: function (error) {
+    console.log(error);
   }
 });
 
 
 controlXMLHttpRequest.callbackBeforeHttpRequest(function (params,/**@type {Sender}  */ sender) {
-   if(sender.getSenderType() == CALLED_BY_XHR){
-     console.log("called before XHR");
-   }else{
-    console.log("called before Fetch API");
-     
-   }
+  if (sender.getSenderType() == CALLED_BY_XHR) {
+    console.log("called before XHR", arguments);
+  } else if (sender.getSenderType() == CALLED_BY_FETCH_REQUEST) {
+    console.log("called before Fetch API", arguments);
+
+  }
 });
 
 
 
-controlXMLHttpRequest.callbackAfterHttpRequest(function (response) {
-    console.log("after")
+controlXMLHttpRequest.callbackAfterHttpRequest(function (response, /**@type {Sender}  */ sender) {
+  if (sender.getSenderType() == CALLED_BY_XHR) {
+    console.log("called after XHR", response, sender);
+  } else if (sender.getSenderType() == CALLED_BY_FETCH_REQUEST) {
+    console.log("called after Fetch API", response, sender);
+  }
 });
 
 controlXMLHttpRequest.apply();
+
 
 fetch('https://jsonplaceholder.typicode.com/posts', {
   method: 'POST',
@@ -50,10 +55,5 @@ fetch('https://jsonplaceholder.typicode.com/posts')
 
 const apiUrl = 'https://jsonplaceholder.typicode.com/todos';
 const xhr = new XMLHttpRequest();
-xhr.onreadystatechange = function () {
-  if (this.readyState === 4 && this.status === 200) {
-    console.log(JSON.parse(xhr.responseText));
-  }
-};
 xhr.open('GET', apiUrl, true);
 xhr.send();

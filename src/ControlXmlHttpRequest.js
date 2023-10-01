@@ -1,5 +1,5 @@
 import { CALLED_BY_FETCH_REQUEST, CALLED_BY_XHR, Sender } from "./Sender";
-import { CXTR_ERROR_APPLY_CALLED_MORE_THAN_ONCE, CXTR_ERROR_CALLBACK } from "./messages";
+import { CXTR_ERROR_APPLY_CALLED_MORE_THAN_ONCE } from "./messages";
 
 
 /**
@@ -9,6 +9,7 @@ let isControlXmlHttpRequestUsed = false;
 
 const beforeSubscribers = [];
 const afterSubscribers = [];
+const XHR_REQUEST_DONE = 4;
 
 const dispatchAfterSubscribers = function (result,/**@type {Sender} */sender,/**@type {function} */ reportOnError) {
     for (let subscriber of afterSubscribers) {
@@ -70,12 +71,14 @@ export class ControlXmlHttpRequest {
     applyForFetchAPi() {
         /*  Store the old fetch api  */
         const OLD_FETCH = window.fetch;
+        /*  Create the sender   */
         const sender = new Sender();
         sender.setSenderType(CALLED_BY_FETCH_REQUEST);
         const configuration = this.configuration
         /*  Calling our calbacks   */
         window.fetch = function () {
             try {
+                sender.setSenderIntance(this);
                 dispatchBeforeSubscribers(arguments, sender, configuration.reportOnError);
             } catch (error) {
                 configuration.reportError(error);
@@ -86,6 +89,7 @@ export class ControlXmlHttpRequest {
                 /*  avoid chaning the original result  */
                 const playableResult = Promise.resolve(result.clone());
                 try {
+                    sender.setSenderIntance(this);
                     dispatchAfterSubscribers(playableResult, sender, configuration.reportOnError);
                 } catch (error) {
                     configuration.reportError(error);
@@ -98,9 +102,16 @@ export class ControlXmlHttpRequest {
     applyForXMlHttpRequest() {
         const OLD_SEND = window.XMLHttpRequest.prototype.send;
         const configuration = this.configuration
+
         const sender = new Sender();
         sender.setSenderType(CALLED_BY_XHR);
         window.XMLHttpRequest.prototype.send = function () {
+            this.addEventListener("readystatechange", function () {
+                if (this.readyState == XHR_REQUEST_DONE) {
+                    sender.setSenderIntance(this);
+                    dispatchAfterSubscribers(this.response, sender, configuration.reportOnError);
+                }
+            })
             try {
                 dispatchBeforeSubscribers(arguments, sender, configuration.reportOnError);
             } catch (error) {
@@ -112,5 +123,11 @@ export class ControlXmlHttpRequest {
         }
     }
 
+    restBeforeSubscribers() {
+        beforeSubscribers = [];
+    }
+    restAfterSubscribers() {
+        afterSubscribers = [];
+    }
 
 }

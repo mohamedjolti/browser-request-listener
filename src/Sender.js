@@ -15,4 +15,11 @@ export class Sender
     getSenderType(){
         return this.type;
     }
+
+    setSenderIntance(senderInstance){
+        this.senderInstance = senderInstance;
+    }
+    getSenderIntance(){
+        return this.senderInstance;
+    }
 }
