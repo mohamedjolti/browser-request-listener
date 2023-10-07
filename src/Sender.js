@@ -1,6 +1,6 @@
 
-export const CALLED_BY_FETCH_REQUEST = "CALLED_BY_FETCH_REQUEST";
-export const CALLED_BY_XHR = "CALLED_BY_XHR";
+export const FETCH_API = "FETCH_API";
+export const XHR = "XHR";
 
 export class Sender
 {
@@ -10,6 +10,7 @@ export class Sender
      **/
     setSenderType(type){
          this.type = type;
+         return this;
     }
 
     getSenderType(){
