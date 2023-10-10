@@ -21,9 +21,8 @@ export const dispatchPostSubscribers = function (result,/**@type {Sender} */send
 /**
  *@function subscriber 
  */
-export const addNewPostSubscriber = function(subscriber){
-    if(subscriber){
+export const addNewPostSubscriber = function (subscriber) {
+    if (subscriber) {
         postSubscribers.push(subscriber);
     }
-   
 }

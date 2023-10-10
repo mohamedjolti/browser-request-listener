@@ -1,4 +1,4 @@
-FROM node:12.22.12-alpine3.15 as build
+FROM node:16.20.2-alpine3.18 as build
 # Create app directory
 WORKDIR /usr/src/app
 # Install app dependencies

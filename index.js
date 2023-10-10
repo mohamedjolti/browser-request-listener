@@ -1,33 +1,34 @@
 import { BrowserRequestController } from "./src/browserRequestController";
 import { FETCH_API, Sender, XHR } from "./src/Sender";
-import { postXhrExistFaildUrlNotFound } from "./tests/calls/postXhrExistFailed";
+import { postXhrfaildUrlNotFound } from "./tests/calls/postXhrFailed";
 
 
 
 const browserRequestController = new BrowserRequestController({
-  // reportOnError: function (error, event) {
-  //    console.log("report error",error);
-  // },
+   reportOnError: function (error, event) {
+      console.log("report error",error);
+   },
   filters: {
-    //  disabelForXhr : true
-    // disabelForFetchApi : true
+    // disabelForXhr : true
+    // disabelForFetchApi : true, 
   }
 });
 
 
-browserRequestController.callbackPreHttpRequest(function (params,/**@type {Sender}  */ sender) {
+browserRequestController.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
   if (sender.getSenderType() == XHR) {
-    console.log("called before XHR", params);
+    console.log("called before XHR", params, sender);
   } else if (sender.getSenderType() == FETCH_API) {
-    console.log("called before Fetch API", params);
+    console.log("called before Fetch API", params, sender);
   }
 });
 
 
 
-browserRequestController.callbackPostHttpRequest(function (response, /**@type {Sender}  */ sender) {
+browserRequestController.addPostHttpRequestListener(function (response, /**@type {Sender}  */ sender) {
   if (sender.getSenderType() == XHR) {
     const XHR_INSTANCE = sender.getSenderIntance();
+    console.log("called after XML http request")
     if (XHR_INSTANCE.status != 201) {
       console.log("error : ", XHR_INSTANCE.status)
     }
@@ -39,7 +40,5 @@ browserRequestController.callbackPostHttpRequest(function (response, /**@type {S
 
 browserRequestController.apply();
 
-
-postXhrExistFaildUrlNotFound();
 
 

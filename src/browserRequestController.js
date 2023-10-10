@@ -1,7 +1,5 @@
-import { FETCH_API, XHR, Sender } from "./Sender";
 import { applyForFetchAPi } from "./applyForFetchApi";
 import { applyForXMlHttpRequest } from "./applyForXmlHttpRequest";
-import { reportConfigOrDefault } from "./defaultReport";
 import { CXTR_ERROR_APPLY_CALLED_MORE_THAN_ONCE } from "./messages";
 import { addNewPostSubscriber } from "./postSubscribers";
 import { addNewPreSubscriber } from "./preSubscribers";
@@ -14,14 +12,21 @@ import { addNewPreSubscriber } from "./preSubscribers";
 let isAlredyApplied = false;
 
 
-export const setIsAlredyApplied = function(status){
-  isAlredyApplied = status;
+export const setIsAlredyApplied = function (status) {
+    isAlredyApplied = status;
 }
 
 export class BrowserRequestController {
 
     /**
-     * @param {JSON} configuration
+     * @param {{
+     * reportOnError:function(),
+     * filters : {{
+     *   disabelForFetchApi : boolean,
+     *   disabelForXhr: boolean
+     * }}
+     * 
+     * }} configuration
      */
     constructor(configuration) {
         this.configuration = configuration;
@@ -32,29 +37,27 @@ export class BrowserRequestController {
      * @param {function} callBack
      * 
      */
-    callbackPreHttpRequest(callBack) {
+    addPreHttpRequestListener(callBack) {
         addNewPreSubscriber(callBack);
     }
 
     /**
     * @param {function} callBack
     */
-    callbackPostHttpRequest(callBack) {
+    addPostHttpRequestListener(callBack) {
         addNewPostSubscriber(callBack)
     }
 
     async apply() {
-        if (!isAlredyApplied) {
-            if (!this.configuration.filters.disabelForFetchApi) {
+        if (!isAlredyApplied || this.configuration.test) {
+            if (!this.configuration.filters?.disabelForFetchApi) {
                 applyForFetchAPi(this.configuration);
             }
-            if (!this.configuration.filters.disabelForXhr) {
+            if (!this.configuration.filters?.disabelForXhr) {
                 applyForXMlHttpRequest(this.configuration);
             }
         } else {
-            throw new console.warn(CXTR_ERROR_APPLY_CALLED_MORE_THAN_ONCE);
+            throw new Error(CXTR_ERROR_APPLY_CALLED_MORE_THAN_ONCE);
         }
     }
-
-
 }

@@ -1,3 +1,4 @@
+import { reportConfigOrDefault } from "./defaultReport";
 
 const preSubscribers = [];
 
@@ -22,5 +23,4 @@ export const dispatchPreSubscribers = function (params,/**@type {Sender} */ send
     if(subscriber){
         preSubscribers.push(subscriber);
     }
-   
 }

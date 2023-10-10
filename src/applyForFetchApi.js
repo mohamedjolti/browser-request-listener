@@ -9,11 +9,11 @@ export const applyForFetchAPi = function(configuration) {
     const sender = new Sender();
     sender.setSenderType(FETCH_API);
     /*  Store the old fetch api  */
-    const OLD_FETCH = window.fetch;
+    const OLD_FETCH = fetch;
     /*  Calling our calbacks   */
-    window.fetch = function () {
+    fetch = function () {
         try {
-            sender.setSenderIntance(this);
+            sender.setSenderIntance(OLD_FETCH);
             dispatchPreSubscribers(arguments, sender, configuration.reportOnError);
         } catch (error) {
             reportConfigOrDefault({
@@ -28,7 +28,7 @@ export const applyForFetchAPi = function(configuration) {
             /*  avoid chaning the original result  */
             const playableResult = Promise.resolve(result.clone());
             try {
-                sender.setSenderIntance(this);
+                sender.setSenderIntance(callOldFetch);
                 dispatchPostSubscribers(playableResult, sender, configuration.reportOnError);
             } catch (error) {
                 reportConfigOrDefault({

@@ -11,8 +11,8 @@ export const applyForXMlHttpRequest = function (configuration) {
     const sender = new Sender();
     sender.setSenderType(XHR);
 
-    const OLD_SEND = window.XMLHttpRequest.prototype.send;
-    window.XMLHttpRequest.prototype.send = function () {
+    const OLD_SEND = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = function () {
         this.addEventListener("readystatechange", function () {
             if (this.readyState == XHR_REQUEST_DONE) {
                 sender.setSenderIntance(this);
@@ -23,7 +23,7 @@ export const applyForXMlHttpRequest = function (configuration) {
             reportConfigOrDefault({
                 sender,
                 error,
-                reportOnError,
+                reportOnError: configuration.reportOnError,
                 event
             });
         })
@@ -33,7 +33,7 @@ export const applyForXMlHttpRequest = function (configuration) {
             reportConfigOrDefault({
                 sender,
                 error,
-                reportOnError
+                reportOnError: configuration.reportOnError
             });
         } finally {
             setIsAlredyApplied(true);
