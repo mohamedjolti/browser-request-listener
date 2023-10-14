@@ -3,15 +3,33 @@ import { BrowserRequestController } from "../../../src/browserRequestController"
 import { expect, jest, test } from '@jest/globals';
 
 
+  /*
+    |--------------------------------------------------------------------------
+    | Test scenario
+    |--------------------------------------------------------------------------
+    |
+    | The counter has an intial value of 0 
+    | In the  pre listner we wil change it to 4
+    | In the  fetch request we will multiply it by 5 
+    | So the exepected behaviour is the value of counter  4 * 5 = 20  
+    | And the value resolved by the fetch request will be counter* 2 = 40
+    */
+
+
 let counter = 0;
+
 
 beforeEach(() => {
   counter = 0;
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
-      json: () => Promise.resolve({ counterReponse: counter + 1 }),
-      clone: () => Promise.resolve({ counterReponse: counter }),
+  global.fetch = jest.fn(() => {
+    counter = counter * 5;
+    return Promise.resolve({
+      json: () => {
+        return Promise.resolve({ counterResponse: counter * 2 })
+      },
+      clone: () => Promise.resolve({ counterResponse: counter }),
     })
+  }
   );
 });
 
@@ -41,8 +59,9 @@ it("test value before changed before fetch", async function () {
   browserRequestController.apply();
 
   expect(counter).toEqual(0);
-  counter = await fetch('URL')
-    .then(response => response.json()).then(data => data.counterReponse);
-  expect(counter).toEqual(5);
+  const counterReponse = await fetch('URL')
+    .then(response => response.json()).then(data => data.counterResponse);
+  expect(counterReponse).toEqual(40);
+  expect(counter).toEqual(20);
 
 })

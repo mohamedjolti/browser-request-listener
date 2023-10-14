@@ -5,9 +5,9 @@ import { postXhrfaildUrlNotFound } from "./tests/calls/postXhrFailed";
 
 
 const browserRequestController = new BrowserRequestController({
-   reportOnError: function (error, event) {
-      console.log("report error",error);
-   },
+  reportOnError: function (error, event) {
+    console.log("report error", error);
+  },
   filters: {
     // disabelForXhr : true
     // disabelForFetchApi : true, 
@@ -39,6 +39,12 @@ browserRequestController.addPostHttpRequestListener(function (response, /**@type
 });
 
 browserRequestController.apply();
+
+
+
+fetch('https://jsonplaceholder.typicode.com/posts/1')
+  .then((response) => response.json())
+  .then((json) => console.log(json));
 
 
 

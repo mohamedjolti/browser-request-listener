@@ -18,7 +18,7 @@ beforeEach(() => {
 });
 
 
-it("test value remains the same if apply fech is disabled", async function () {
+it("test value remains the same if apply fetch is disabled", async function () {
     const browserRequestController = new BrowserRequestController({
       reportOnError: function (error, event) {
         console.log("report error", error);
@@ -32,6 +32,13 @@ it("test value remains the same if apply fech is disabled", async function () {
   
   
     browserRequestController.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
+      if (sender.getSenderType() == XHR) {
+      } else if (sender.getSenderType() == FETCH_API) {
+        counter = 4;
+      }
+    });
+
+    browserRequestController.addPostHttpRequestListener(function (response,/**@type {Sender}  */ sender) {
       if (sender.getSenderType() == XHR) {
       } else if (sender.getSenderType() == FETCH_API) {
         counter = 4;
