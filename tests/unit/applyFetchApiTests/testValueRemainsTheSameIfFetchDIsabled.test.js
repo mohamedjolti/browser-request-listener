@@ -1,6 +1,6 @@
 import { FETCH_API, XHR } from "../../../src/Sender";
 import { BrowserRequestController } from "../../../src/browserRequestController";
-import { expect, jest, test } from '@jest/globals';
+import { expect, jest } from '@jest/globals';
 
 
 
@@ -18,37 +18,35 @@ beforeEach(() => {
 });
 
 
-it("test value remains the same if apply fetch is disabled", async function () {
-    const browserRequestController = new BrowserRequestController({
-      reportOnError: function (error, event) {
-        console.log("report error", error);
-      },
-      filters: {
-        disabelForXhr: true,
-        disabelForFetchApi: true
-      },
-      test: true
-    });
-  
-  
-    browserRequestController.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
-      if (sender.getSenderType() == XHR) {
-      } else if (sender.getSenderType() == FETCH_API) {
-        counter = 4;
-      }
-    });
+it("Test value remains the same if apply fetch is disabled", async function () {
+  const browserRequestController = new BrowserRequestController({
+    reportOnError: function (error, event) {
+      console.log("report error", error);
+    },
+    filters: {
+      disableForXHr: true,
+      disableForFetch: true
+    },
+    test: true
+  });
 
-    browserRequestController.addPostHttpRequestListener(function (response,/**@type {Sender}  */ sender) {
-      if (sender.getSenderType() == XHR) {
-      } else if (sender.getSenderType() == FETCH_API) {
-        counter = 4;
-      }
-    });
-  
-    browserRequestController.apply();
-  
-    expect(counter).toEqual(0);
-    counter = await fetch('URL').then(response => response.json()).then(data => data.counterReponse);
-    expect(counter).toEqual(1);
-  
-  })
+
+  browserRequestController.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
+    if (sender.getSenderType() == FETCH_API) {
+      counter = 4;
+    }
+  });
+
+  browserRequestController.addPostHttpRequestListener(function (response,/**@type {Sender}  */ sender) {
+    if (sender.getSenderType() == FETCH_API) {
+      counter = 4;
+    }
+  });
+
+  browserRequestController.apply();
+
+  expect(counter).toEqual(0);
+  counter = await fetch('URL').then(response => response.json()).then(data => data.counterReponse);
+  expect(counter).toEqual(1);
+
+})

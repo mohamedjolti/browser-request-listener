@@ -22,8 +22,8 @@ export class BrowserRequestController {
      * @param {{
      * reportOnError:function(),
      * filters : {{
-     *   disabelForFetchApi : boolean,
-     *   disabelForXhr: boolean
+     *   disableForFetch : boolean,
+     *   disableForXHr: boolean
      * }}
      * 
      * }} configuration
@@ -50,10 +50,10 @@ export class BrowserRequestController {
 
     async apply() {
         if (!isAlredyApplied || this.configuration.test) {
-            if (!this.configuration.filters?.disabelForFetchApi) {
+            if (!this.configuration.filters?.disableForFetch) {
                 applyForFetchAPi(this.configuration);
             }
-            if (!this.configuration.filters?.disabelForXhr) {
+            if (!this.configuration.filters?.disableForXHr) {
                 applyForXMlHttpRequest(this.configuration);
             }
         } else {

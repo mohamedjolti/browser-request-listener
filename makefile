@@ -11,3 +11,6 @@ startContainer:
 
 test:
 	$(dce) controlhttprequest npm test
+install:
+	$(dce) controlhttprequest  npm install
+

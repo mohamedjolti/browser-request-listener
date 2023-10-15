@@ -1,6 +1,6 @@
 import { BrowserRequestController } from "./src/browserRequestController";
 import { FETCH_API, Sender, XHR } from "./src/Sender";
-import { postXhrfaildUrlNotFound } from "./tests/calls/postXhrFailed";
+import { postXhrSuccess } from "./tests/calls/postXhrSuccess";
 
 
 
@@ -9,8 +9,8 @@ const browserRequestController = new BrowserRequestController({
     console.log("report error", error);
   },
   filters: {
-    // disabelForXhr : true
-    // disabelForFetchApi : true, 
+    // disableForXHr : true
+    // disableForFetch : true, 
   }
 });
 
@@ -28,7 +28,7 @@ browserRequestController.addPreHttpRequestListener(function (params,/**@type {Se
 browserRequestController.addPostHttpRequestListener(function (response, /**@type {Sender}  */ sender) {
   if (sender.getSenderType() == XHR) {
     const XHR_INSTANCE = sender.getSenderIntance();
-    console.log("called after XML http request")
+    console.log("called after XML http request", response)
     if (XHR_INSTANCE.status != 201) {
       console.log("error : ", XHR_INSTANCE.status)
     }
@@ -36,15 +36,8 @@ browserRequestController.addPostHttpRequestListener(function (response, /**@type
   } else if (sender.getSenderType() == FETCH_API) {
     console.log("called after Fetch API", response, sender);
   }
-});
+}); 
 
 browserRequestController.apply();
 
-
-
-fetch('https://jsonplaceholder.typicode.com/posts/1')
-  .then((response) => response.json())
-  .then((json) => console.log(json));
-
-
-
+postXhrSuccess();

@@ -1,5 +1,5 @@
 # browser-http-controller
-Execute callbacks before or after each fetch api call  and XMlHttprequest c ll
+Execute callbacks before or after each fetch api call  and XMlHttprequest call
 
 # Install
 ```
@@ -11,15 +11,15 @@ npm install browser-http-controller
 
 import { BrowserRequestController } from "browserRequestController";
 
-
+ 
 
 const browserRequestController = new BrowserRequestController({
   reportOnError: function (error, event) {
     console.log("report error", error);
   },
   filters: {
-    // disabelForXhr : true
-    // disabelForFetchApi : true, 
+    // disableForXHr : true
+    // disableForFetch : true, 
   }
 });
 
