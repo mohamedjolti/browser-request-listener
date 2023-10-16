@@ -1,5 +1,5 @@
 import { FETCH_API, XHR } from "../../../src/Sender";
-import { BrowserRequestController } from "../../../src/browserRequestController";
+import { BrowserRequestListener } from "../../../index";
 import { expect, jest, test } from '@jest/globals';
 
 /*
@@ -10,7 +10,7 @@ import { expect, jest, test } from '@jest/globals';
   | The counter has an intial value of 0 
   | In the fetch request we will change it to 1
   | In the post listener we will multily the counter by 5;
-  | So the exepected behaviour is the value of counter after the post listner should be 1 * 5 = 5
+  | So the exepected behaviour is the value of counter after the post Listener should be 1 * 5 = 5
   |
   */
 
@@ -32,7 +32,7 @@ beforeEach(() => {
 
 
 it("Test value chanage after fetch request", async function () {
-  const browserRequestController = new BrowserRequestController({
+  const browserRequestListener = new BrowserRequestListener({
     reportOnError: function (error, event) {
       console.log("report error", error);
     },
@@ -44,13 +44,13 @@ it("Test value chanage after fetch request", async function () {
   });
 
 
-  browserRequestController.addPostHttpRequestListener(function (response,/**@type {Sender}  */ sender) {
+  browserRequestListener.addPostHttpRequestListener(function (response,/**@type {Sender}  */ sender) {
     if (sender.getSenderType() == FETCH_API) {
       counter = counter * 5;
     }
   });
 
-  browserRequestController.apply();
+  browserRequestListener.apply();
 
   expect(counter).toEqual(0);
   let counterResponse = await fetch('URL').then(response => response.json()).then(data => data.counterResponse);

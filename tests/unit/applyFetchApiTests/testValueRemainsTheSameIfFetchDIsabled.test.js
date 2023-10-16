@@ -1,5 +1,5 @@
 import { FETCH_API, XHR } from "../../../src/Sender";
-import { BrowserRequestController } from "../../../src/browserRequestController";
+import { BrowserRequestListener } from "../../../index";
 import { expect, jest } from '@jest/globals';
 
 
@@ -19,7 +19,7 @@ beforeEach(() => {
 
 
 it("Test value remains the same if apply fetch is disabled", async function () {
-  const browserRequestController = new BrowserRequestController({
+  const browserRequestListener = new BrowserRequestListener({
     reportOnError: function (error, event) {
       console.log("report error", error);
     },
@@ -31,19 +31,19 @@ it("Test value remains the same if apply fetch is disabled", async function () {
   });
 
 
-  browserRequestController.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
+  browserRequestListener.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
     if (sender.getSenderType() == FETCH_API) {
       counter = 4;
     }
   });
 
-  browserRequestController.addPostHttpRequestListener(function (response,/**@type {Sender}  */ sender) {
+  browserRequestListener.addPostHttpRequestListener(function (response,/**@type {Sender}  */ sender) {
     if (sender.getSenderType() == FETCH_API) {
       counter = 4;
     }
   });
 
-  browserRequestController.apply();
+  browserRequestListener.apply();
 
   expect(counter).toEqual(0);
   counter = await fetch('URL').then(response => response.json()).then(data => data.counterReponse);

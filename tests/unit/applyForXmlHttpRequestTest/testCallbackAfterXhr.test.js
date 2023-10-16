@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { FETCH_API, XHR } from "../../../src/Sender";
-import { BrowserRequestController } from "../../../src/browserRequestController";
+import { BrowserRequestListener } from "../../../index";
 import { expect, jest, test } from '@jest/globals';
 import { postXhrSuccess } from "../../calls/postXhrSuccess";
 /*
@@ -19,8 +19,8 @@ let responseXhr = {};
 
 it("test value chanage after XmlHttp Request", async function () {
     let response = {};
-    // Create the instance of BrowserRequestController
-    const browserRequestController = new BrowserRequestController({
+    // Create the instance of BrowserRequestListener
+    const browserRequestListener = new BrowserRequestListener({
         reportOnError: function (error, event) {
             console.log("report error", error);
         },
@@ -32,13 +32,13 @@ it("test value chanage after XmlHttp Request", async function () {
     });
 
 
-    browserRequestController.addPostHttpRequestListener(function (response,/**@type {Sender}  */ sender) {
+    browserRequestListener.addPostHttpRequestListener(function (response,/**@type {Sender}  */ sender) {
         if (sender.getSenderType() == XHR) {
             responseXhr = JSON.parse(response);
         }
     });
 
-    browserRequestController.apply();
+    browserRequestListener.apply();
 
     // Call testing
 

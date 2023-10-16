@@ -1,5 +1,5 @@
 import { FETCH_API, XHR } from "../../../src/Sender";
-import { BrowserRequestController } from "../../../src/browserRequestController";
+import { BrowserRequestListener } from "../../../index";
 import { expect, jest, test } from '@jest/globals';
 
 
@@ -33,8 +33,8 @@ beforeEach(() => {
 
 
 
-it("Test that fetch not affected by a listner throwin an error", async function () {
-    const browserRequestController = new BrowserRequestController({
+it("Test that fetch not affected by a Listener throwin an error", async function () {
+    const browserRequestListener = new BrowserRequestListener({
         reportOnError: function (error, event) {
             console.log("callback error : ", error);
         },
@@ -46,11 +46,11 @@ it("Test that fetch not affected by a listner throwin an error", async function 
     });
 
 
-    browserRequestController.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
+    browserRequestListener.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
         throw new Error("Unexpecter error");
     });
 
-    browserRequestController.apply();
+    browserRequestListener.apply();
 
     expect(counter).toEqual(0);
     const counterReponse = await fetch('URL')

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { FETCH_API, XHR } from "../../../src/Sender";
-import { BrowserRequestController } from "../../../src/browserRequestController";
+import { BrowserRequestListener } from "../../../index";
 import { expect, jest, test } from '@jest/globals';
 import { postXhrSuccess } from "../../calls/postXhrSuccess";
 import { sleep } from "../../helpers/sleep";
@@ -20,8 +20,8 @@ let argsXhr = {};
 
 it("Test Xhr not affected by a callback throwing an error", async function () {
     let response = {};
-    // Create the instance of BrowserRequestController
-    const browserRequestController = new BrowserRequestController({
+    // Create the instance of BrowserRequestListener
+    const browserRequestListener = new BrowserRequestListener({
         reportOnError: function (error, event) {
             console.log("callback error : ", error);
         },
@@ -33,11 +33,11 @@ it("Test Xhr not affected by a callback throwing an error", async function () {
     });
 
 
-    browserRequestController.addPreHttpRequestListener(function (args,/**@type {Sender}  */ sender) {
+    browserRequestListener.addPreHttpRequestListener(function (args,/**@type {Sender}  */ sender) {
         throw Error("Error in Callback");
     });
 
-    browserRequestController.apply();
+    browserRequestListener.apply();
 
     // Call testing
     response = await postXhrSuccess();

@@ -1,43 +1,64 @@
-import { BrowserRequestController } from "./src/browserRequestController";
-import { FETCH_API, Sender, XHR } from "./src/Sender";
-import { postXhrSuccess } from "./tests/calls/postXhrSuccess";
+import { applyForFetchAPi } from "./src/applyForFetchApi";
+import { applyForXMlHttpRequest } from "./src/applyForXmlHttpRequest";
+import { CXTR_ERROR_APPLY_CALLED_MORE_THAN_ONCE } from "./src/messages";
+import { addNewPostSubscriber } from "./src/postSubscribers";
+import { addNewPreSubscriber } from "./src/preSubscribers";
 
 
 
-const browserRequestController = new BrowserRequestController({
-  reportOnError: function (error, event) {
-    console.log("report error", error);
-  },
-  filters: {
-    // disableForXHr : true
-    // disableForFetch : true, 
-  }
-});
+/**
+* @var {boolean} isAlredyApplied the change of native function should be singelton
+*/
+let isAlredyApplied = false;
 
 
-browserRequestController.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
-  if (sender.getSenderType() == XHR) {
-    console.log("called before XHR", params, sender);
-  } else if (sender.getSenderType() == FETCH_API) {
-    console.log("called before Fetch API", params, sender);
-  }
-});
+export const setIsAlredyApplied = function (status) {
+    isAlredyApplied = status;
+}
 
+export class BrowserRequestListener {
 
+    /**
+     * @param {{
+     * reportOnError:function(),
+     * filters : {{
+     *   disableForFetch : boolean,
+     *   disableForXHr: boolean
+     * }}
+     * 
+     * }} configuration
+     */
+    constructor(configuration) {
+        this.configuration = configuration;
 
-browserRequestController.addPostHttpRequestListener(function (response, /**@type {Sender}  */ sender) {
-  if (sender.getSenderType() == XHR) {
-    const XHR_INSTANCE = sender.getSenderIntance();
-    console.log("called after XML http request", response)
-    if (XHR_INSTANCE.status != 201) {
-      console.log("error : ", XHR_INSTANCE.status)
     }
 
-  } else if (sender.getSenderType() == FETCH_API) {
-    console.log("called after Fetch API", response, sender);
-  }
-}); 
+    /**
+     * @param {function} callBack
+     * 
+     */
+    addPreHttpRequestListener(callBack) {
+        addNewPreSubscriber(callBack);
+    }
 
-browserRequestController.apply();
+    /**
+    * @param {function} callBack
+    */
+    addPostHttpRequestListener(callBack) {
+        addNewPostSubscriber(callBack)
+    }
 
-postXhrSuccess();
+    async apply() {
+        if (!isAlredyApplied || this.configuration.test) {
+            if (!this.configuration.filters?.disableForFetch) {
+                applyForFetchAPi(this.configuration);
+            }
+            if (!this.configuration.filters?.disableForXHr) {
+                applyForXMlHttpRequest(this.configuration);
+            }
+        } else {
+            throw new Error(CXTR_ERROR_APPLY_CALLED_MORE_THAN_ONCE);
+        }
+    }
+}
+

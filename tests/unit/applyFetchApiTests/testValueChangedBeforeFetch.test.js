@@ -1,5 +1,5 @@
 import { FETCH_API, XHR } from "../../../src/Sender";
-import { BrowserRequestController } from "../../../src/browserRequestController";
+import { BrowserRequestListener } from "../../../index";
 import { expect, jest, test } from '@jest/globals';
 
 
@@ -9,7 +9,7 @@ import { expect, jest, test } from '@jest/globals';
   |--------------------------------------------------------------------------
   |
   | The counter has an intial value of 0 
-  | In the  pre listner we wil change it to 4
+  | In the  pre Listener we wil change it to 4
   | In the  fetch request we will multiply it by 5 
   | So the exepected behaviour is the value of counter  4 * 5 = 20  
   | And the value resolved by the fetch request will be counter* 2 = 40
@@ -37,7 +37,7 @@ beforeEach(() => {
 
 
 it("Test value before changed before fetch", async function () {
-  const browserRequestController = new BrowserRequestController({
+  const browserRequestListener = new BrowserRequestListener({
     reportOnError: function (error, event) {
       console.log("report error", error);
     },
@@ -49,13 +49,18 @@ it("Test value before changed before fetch", async function () {
   });
 
 
-  browserRequestController.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
+  browserRequestListener.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
     if (sender.getSenderType() == FETCH_API) {
-      counter = 4;
+      counter +=  2;
+    }
+  });
+  browserRequestListener.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
+    if (sender.getSenderType() == FETCH_API) {
+      counter +=  2;
     }
   });
 
-  browserRequestController.apply();
+  browserRequestListener.apply();
 
   expect(counter).toEqual(0);
   const counterReponse = await fetch('URL')
