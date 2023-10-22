@@ -1,64 +1,48 @@
-import { applyForFetchAPi } from "./src/applyForFetchApi";
-import { applyForXMlHttpRequest } from "./src/applyForXmlHttpRequest";
-import { CXTR_ERROR_APPLY_CALLED_MORE_THAN_ONCE } from "./src/messages";
-import { addNewPostSubscriber } from "./src/postSubscribers";
-import { addNewPreSubscriber } from "./src/preSubscribers";
+import { BrowserRequestListener } from "./BrowserRequestListener";
+
+ 
+
+const browserRequestListener = new BrowserRequestListener({
+  reportOnError: function (error, event) {
+    console.log("report error", error);
+  },
+  filters: {
+    // disableForXHr : true
+    // disableForFetch : true, 
+  }
+});
+
+browserRequestListener.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
+  if (sender.getSenderType() == "XHR") {
+    console.log("called before XHR", params, sender);
+  } else if (sender.getSenderType() == "FETCH_API") {
+    console.log("called before Fetch API", params, sender);
+  }
+});
+
+  browserRequestListener.addPostHttpRequestListener(function (response, /**@type {Sender}  */ sender) {
+  if (sender.getSenderType() == "XHR") {
+    console.log("called after XML http request", response, sender);
+  } else if (sender.getSenderType() == "FETCH_API") {
+    response.then(function(res){
+        console.log(res.ok)
+    })
+    console.log("called after Fetch API", response, sender);
+  }
+});
+
+browserRequestListener.apply();
 
 
 
-/**
-* @var {boolean} isAlredyApplied the change of native function should be singelton
-*/
-let isAlredyApplied = false;
-
-
-export const setIsAlredyApplied = function (status) {
-    isAlredyApplied = status;
-}
-
-export class BrowserRequestListener {
-
-    /**
-     * @param {{
-     * reportOnError:function(),
-     * filters : {{
-     *   disableForFetch : boolean,
-     *   disableForXHr: boolean
-     * }}
-     * 
-     * }} configuration
-     */
-    constructor(configuration) {
-        this.configuration = configuration;
-
-    }
-
-    /**
-     * @param {function} callBack
-     * 
-     */
-    addPreHttpRequestListener(callBack) {
-        addNewPreSubscriber(callBack);
-    }
-
-    /**
-    * @param {function} callBack
-    */
-    addPostHttpRequestListener(callBack) {
-        addNewPostSubscriber(callBack)
-    }
-
-    async apply() {
-        if (!isAlredyApplied || this.configuration.test) {
-            if (!this.configuration.filters?.disableForFetch) {
-                applyForFetchAPi(this.configuration);
-            }
-            if (!this.configuration.filters?.disableForXHr) {
-                applyForXMlHttpRequest(this.configuration);
-            }
-        } else {
-            throw new Error(CXTR_ERROR_APPLY_CALLED_MORE_THAN_ONCE);
+fetch('https://jsonplaceholder.typicode.com/todos/1')
+      .then(function(response){
+        if(response.ok){
+            return response.json();
         }
-    }
-}
-
+        throw new Error("error to fetch from");
+      }).then(function(reponseJson){
+         console.log(reponseJson);
+      }).catch(function(error){
+        console.log("hi" + error);
+      })

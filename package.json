@@ -2,7 +2,7 @@
   "name": "browser-request-listener",
   "version": "1.0.2",
   "description": "Execute callbacks before or after each fetch api call  or XMlHttprequest call",
-  "main": "index.js",
+  "main": "BrowserRequestListener.js",
   "directories": {
     "test": "tests"
   },

@@ -1,4 +1,4 @@
-import {  setIsAlredyApplied } from "../index";
+import {  setIsAlredyApplied } from "../BrowserRequestListener";
 import { reportConfigOrDefault } from "./defaultReport";
 import { dispatchPostSubscribers } from "./postSubscribers";
 import { dispatchPreSubscribers } from "./preSubscribers";
