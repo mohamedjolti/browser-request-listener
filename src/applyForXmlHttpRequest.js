@@ -1,4 +1,4 @@
-import {  setIsAlredyApplied } from "../BrowserRequestListener";
+import {  setIsAlreadyApplied } from "../BrowserRequestListener";
 import { reportConfigOrDefault } from "./defaultReport";
 import { dispatchPostSubscribers } from "./postSubscribers";
 import { dispatchPreSubscribers } from "./preSubscribers";
@@ -15,7 +15,7 @@ export const applyForXMlHttpRequest = function (configuration) {
     XMLHttpRequest.prototype.send = function () {
         this.addEventListener("readystatechange", function () {
             if (this.readyState == XHR_REQUEST_DONE) {
-                sender.setSenderIntance(this);
+                sender.setSenderInstance(this);
                 dispatchPostSubscribers(this.response, sender, configuration.reportOnError);
             }
         })
@@ -36,7 +36,7 @@ export const applyForXMlHttpRequest = function (configuration) {
                 reportOnError: configuration.reportOnError
             });
         } finally {
-            setIsAlredyApplied(true);
+            setIsAlreadyApplied(true);
             OLD_SEND.apply(this, arguments);
         }
     }

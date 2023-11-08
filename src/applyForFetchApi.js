@@ -1,5 +1,5 @@
 import { FETCH_API, Sender } from "./Sender";
-import { setIsAlredyApplied } from "../BrowserRequestListener";
+import { setIsAlreadyApplied } from "../BrowserRequestListener";
 import { reportConfigOrDefault } from "./defaultReport";
 import { dispatchPostSubscribers } from "./postSubscribers";
 import { dispatchPreSubscribers } from "./preSubscribers";
@@ -10,10 +10,10 @@ export const applyForFetchAPi = function(configuration) {
     sender.setSenderType(FETCH_API);
     /*  Store the old fetch api  */
     const OLD_FETCH = fetch;
-    /*  Calling our calbacks   */
+    /*  Calling our callbacks   */
     fetch = function () {
         try {
-            sender.setSenderIntance(OLD_FETCH);
+            sender.setSenderInstance(OLD_FETCH);
             dispatchPreSubscribers(arguments, sender, configuration.reportOnError);
         } catch (error) {
             reportConfigOrDefault({
@@ -25,10 +25,10 @@ export const applyForFetchAPi = function(configuration) {
         /*  calling the old fetch api   */
         const callOldFetch = OLD_FETCH.apply(this, arguments);
         callOldFetch.then(function (result) {
-            /*  avoid chaning the original result  */
+            /*  avoid chaining the original result  */
             const playableResult = Promise.resolve(result.clone());
             try {
-                sender.setSenderIntance(callOldFetch);
+                sender.setSenderInstance(callOldFetch);
                 dispatchPostSubscribers(playableResult, sender, configuration.reportOnError);
             } catch (error) {
                 reportConfigOrDefault({
@@ -38,7 +38,7 @@ export const applyForFetchAPi = function(configuration) {
                 });
             }
         })
-        setIsAlredyApplied(true);
+        setIsAlreadyApplied(true);
         return callOldFetch;
     };
 }
