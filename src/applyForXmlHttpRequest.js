@@ -22,7 +22,7 @@ export const applyForXMlHttpRequest = function (configuration) {
         this.addEventListener("error", function(event){            
             reportConfigOrDefault({
                 sender,
-                error,
+                error: 'ERROR', // hard coding a value here, because there is no error defined
                 reportOnError: configuration.reportOnError,
                 event
             });
