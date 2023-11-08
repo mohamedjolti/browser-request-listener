@@ -4,9 +4,6 @@ import { dispatchPostSubscribers } from "./postSubscribers";
 import { dispatchPreSubscribers } from "./preSubscribers";
 import { Sender, XHR } from "./Sender";
 
-const XHR_REQUEST_DONE = 4;
-
-
 export const applyForXMlHttpRequest = function (configuration) {
     const sender = new Sender();
     sender.setSenderType(XHR);
@@ -14,7 +11,7 @@ export const applyForXMlHttpRequest = function (configuration) {
     const OLD_SEND = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function () {
         this.addEventListener("readystatechange", function () {
-            if (this.readyState == XHR_REQUEST_DONE) {
+            if (this.readyState === XMLHttpRequest.DONE) {
                 dispatchPostSubscribers(this.response, sender, configuration.reportOnError);
             }
         })
