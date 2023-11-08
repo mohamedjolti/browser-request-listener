@@ -15,7 +15,6 @@ export const applyForXMlHttpRequest = function (configuration) {
     XMLHttpRequest.prototype.send = function () {
         this.addEventListener("readystatechange", function () {
             if (this.readyState == XHR_REQUEST_DONE) {
-                sender.setSenderInstance(this);
                 dispatchPostSubscribers(this.response, sender, configuration.reportOnError);
             }
         })
@@ -28,6 +27,7 @@ export const applyForXMlHttpRequest = function (configuration) {
             });
         })
         try {
+            sender.setSenderInstance(this);
             dispatchPreSubscribers(arguments, sender, configuration.reportOnError);
         } catch (error) {
             reportConfigOrDefault({
