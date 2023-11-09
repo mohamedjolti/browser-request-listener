@@ -7,7 +7,7 @@ import { addNewPreSubscriber } from "./src/preSubscribers";
 
 
 /**
-* @var {boolean} isAlreadyApplied the change of native function should be singelton
+* @var {boolean} isAlreadyApplied the change of native function should be singleton
 */
 let isAlreadyApplied = false;
 
