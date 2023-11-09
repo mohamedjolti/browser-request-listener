@@ -11,8 +11,8 @@ beforeEach(() => {
   counter = 0;
   global.fetch = jest.fn(() =>
     Promise.resolve({
-      json: () => Promise.resolve({ counterReponse: counter + 1 }),
-      clone: () => Promise.resolve({ counterReponse: counter }),
+      json: () => Promise.resolve({ counterResponse: counter + 1 }),
+      clone: () => Promise.resolve({ counterResponse: counter }),
     })
   );
 });
@@ -46,7 +46,7 @@ it("Test value remains the same if apply fetch is disabled", async function () {
   browserRequestListener.apply();
 
   expect(counter).toEqual(0);
-  counter = await fetch('URL').then(response => response.json()).then(data => data.counterReponse);
+  counter = await fetch('URL').then(response => response.json()).then(data => data.counterResponse);
   expect(counter).toEqual(1);
 
 })

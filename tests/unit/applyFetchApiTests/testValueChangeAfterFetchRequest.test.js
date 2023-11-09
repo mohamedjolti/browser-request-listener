@@ -31,7 +31,7 @@ beforeEach(() => {
 });
 
 
-it("Test value chanage after fetch request", async function () {
+it("Test value change after fetch request", async function () {
   const browserRequestListener = new BrowserRequestListener({
     reportOnError: function (error, event) {
       console.log("report error", error);

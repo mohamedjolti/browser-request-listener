@@ -47,7 +47,7 @@ it("Test that fetch not affected by a Listener throwin an error", async function
 
 
     browserRequestListener.addPreHttpRequestListener(function (params,/**@type {Sender}  */ sender) {
-        throw new Error("Unexpecter error");
+        throw new Error("Unexpected error");
     });
 
     browserRequestListener.apply();

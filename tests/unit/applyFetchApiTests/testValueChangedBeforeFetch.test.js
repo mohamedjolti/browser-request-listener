@@ -63,9 +63,9 @@ it("Test value before changed before fetch", async function () {
   browserRequestListener.apply();
 
   expect(counter).toEqual(0);
-  const counterReponse = await fetch('URL')
+  const counterResponse = await fetch('URL')
     .then(response => response.json()).then(data => data.counterResponse);
-  expect(counterReponse).toEqual(40);
+  expect(counterResponse).toEqual(40);
   expect(counter).toEqual(20);
 
 })
