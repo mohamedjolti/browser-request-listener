@@ -6,6 +6,9 @@ sayHello:
 firstinstall:
 	$(dc) build controlhttprequest
 	$(dc) up -d
+
+run:
+	$(dce)  controlhttprequest npm run build
 startContainer:
 	$(dc) start controlhttprequest
 

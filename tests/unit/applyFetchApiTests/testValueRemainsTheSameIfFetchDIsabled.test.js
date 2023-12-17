@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { FETCH_API, XHR } from "../../../src/Sender";
 import { BrowserRequestListener } from "../../../BrowserRequestListener";
 import { expect, jest } from '@jest/globals';
