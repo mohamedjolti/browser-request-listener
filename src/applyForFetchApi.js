@@ -1,5 +1,5 @@
 import { FETCH_API, Sender } from "./Sender";
-import { setIsAlredyApplied } from "../BrowserRequestListener";
+import { setIsAlreadyApplied } from "../BrowserRequestListener";
 import { reportConfigOrDefault } from "./defaultReport";
 import { dispatchPostSubscribers } from "./postSubscribers";
 import { dispatchPreSubscribers } from "./preSubscribers";
@@ -10,35 +10,28 @@ export const applyForFetchAPi = function(configuration) {
     sender.setSenderType(FETCH_API);
     /*  Store the old fetch api  */
     const OLD_FETCH = fetch;
-    /*  Calling our calbacks   */
-    fetch = function () {
+    /*  Calling our callbacks   */
+    fetch = async function() {
         try {
-            sender.setSenderIntance(OLD_FETCH);
+            sender.setSenderInstance(OLD_FETCH);
             dispatchPreSubscribers(arguments, sender, configuration.reportOnError);
+            let [resource, config] = arguments;
+            const result = await OLD_FETCH(resource, config);
+            setIsAlreadyApplied(true);
+            if (result && result.clone) {
+                const playableResult = Promise.resolve(result.clone());
+                dispatchPostSubscribers(playableResult, sender, configuration.reportOnError);
+            } else if (result && !result.ok) {
+                return Promise.reject(result);
+            }
+            return result;
         } catch (error) {
             reportConfigOrDefault({
                 sender,
                 error,
                 reportOnError:configuration.reportOnError
             });
+            return Promise.reject(error);
         }
-        /*  calling the old fetch api   */
-        const callOldFetch = OLD_FETCH.apply(this, arguments);
-        callOldFetch.then(function (result) {
-            /*  avoid chaning the original result  */
-            const playableResult = Promise.resolve(result.clone());
-            try {
-                sender.setSenderIntance(callOldFetch);
-                dispatchPostSubscribers(playableResult, sender, configuration.reportOnError);
-            } catch (error) {
-                reportConfigOrDefault({
-                    sender,
-                    error,
-                    reportOnError:configuration.reportOnError
-                });
-            }
-        })
-        setIsAlredyApplied(true);
-        return callOldFetch;
     };
 }

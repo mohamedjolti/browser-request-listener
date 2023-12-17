@@ -1,11 +1,8 @@
-import {  setIsAlredyApplied } from "../BrowserRequestListener";
+import {  setIsAlreadyApplied } from "../BrowserRequestListener";
 import { reportConfigOrDefault } from "./defaultReport";
 import { dispatchPostSubscribers } from "./postSubscribers";
 import { dispatchPreSubscribers } from "./preSubscribers";
 import { Sender, XHR } from "./Sender";
-
-const XHR_REQUEST_DONE = 4;
-
 
 export const applyForXMlHttpRequest = function (configuration) {
     const sender = new Sender();
@@ -14,20 +11,20 @@ export const applyForXMlHttpRequest = function (configuration) {
     const OLD_SEND = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function () {
         this.addEventListener("readystatechange", function () {
-            if (this.readyState == XHR_REQUEST_DONE) {
-                sender.setSenderIntance(this);
+            if (this.readyState === XMLHttpRequest.DONE) {
                 dispatchPostSubscribers(this.response, sender, configuration.reportOnError);
             }
         })
         this.addEventListener("error", function(event){            
             reportConfigOrDefault({
                 sender,
-                error,
+                error: 'ERROR', // hard coding a value here, because there is no error defined
                 reportOnError: configuration.reportOnError,
                 event
             });
         })
         try {
+            sender.setSenderInstance(this);
             dispatchPreSubscribers(arguments, sender, configuration.reportOnError);
         } catch (error) {
             reportConfigOrDefault({
@@ -36,7 +33,7 @@ export const applyForXMlHttpRequest = function (configuration) {
                 reportOnError: configuration.reportOnError
             });
         } finally {
-            setIsAlredyApplied(true);
+            setIsAlreadyApplied(true);
             OLD_SEND.apply(this, arguments);
         }
     }

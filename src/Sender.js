@@ -17,10 +17,10 @@ export class Sender
         return this.type;
     }
 
-    setSenderIntance(senderInstance){
+    setSenderInstance(senderInstance){
         this.senderInstance = senderInstance;
     }
-    getSenderIntance(){
+    getSenderInstance(){
         return this.senderInstance;
     }
 }

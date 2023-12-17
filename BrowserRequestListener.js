@@ -7,13 +7,13 @@ import { addNewPreSubscriber } from "./src/preSubscribers";
 
 
 /**
-* @var {boolean} isAlredyApplied the change of native function should be singelton
+* @var {boolean} isAlreadyApplied the change of native function should be singleton
 */
-let isAlredyApplied = false;
+let isAlreadyApplied = false;
 
 
-export const setIsAlredyApplied = function (status) {
-    isAlredyApplied = status;
+export const setIsAlreadyApplied = function (status) {
+    isAlreadyApplied = status;
 }
 
 export class BrowserRequestListener {
@@ -49,7 +49,7 @@ export class BrowserRequestListener {
     }
 
     async apply() {
-        if (!isAlredyApplied || this.configuration.test) {
+        if (!isAlreadyApplied || this.configuration.test) {
             if (!this.configuration.filters?.disableForFetch) {
                 applyForFetchAPi(this.configuration);
             }
